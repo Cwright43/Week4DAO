@@ -9,7 +9,9 @@ const Create = ({ provider, dao, setIsLoading }) => {
 	const [name, setName] = useState('')
 	const [amount, setAmount] = useState(0)
 	const [address, setAddress] = useState('')
+	const [description, setDescription] = useState('')
 	const [isWaiting, setIsWaiting] = useState(false)
+
 
 	const createHandler = async (e) => {
 		e.preventDefault()
@@ -31,6 +33,8 @@ const Create = ({ provider, dao, setIsLoading }) => {
 		setIsLoading(true)
 	}
 
+
+
 	return(
 
 		<Form onSubmit={createHandler}>
@@ -49,10 +53,17 @@ const Create = ({ provider, dao, setIsLoading }) => {
 			/>
 			<Form.Control 
 				type='text' 
-				placeholder='Enter Address' 
+				placeholder='Enter Address of Recipient' 
 				className='my-2'
 				onChange={(e) => setAddress(e.target.value)}
 			/>
+			<Form.Control 
+				type='text' 
+				placeholder='Enter Description for New Proposal' 
+				className='my-2'
+				onChange={(e) => setDescription(e.target.value)}
+			/>
+
 			{isWaiting ?  (
 				<Spinner animation="border" style={{ display: 'block', margin: '0 auto' }} />
 				) : (

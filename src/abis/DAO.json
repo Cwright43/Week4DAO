@@ -23,6 +23,25 @@
           "internalType": "uint256",
           "name": "id",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "DownVote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
         }
       ],
       "name": "Finalize",
@@ -75,6 +94,25 @@
           "type": "address"
         }
       ],
+      "name": "UpVote",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "investor",
+          "type": "address"
+        }
+      ],
       "name": "Vote",
       "type": "event"
     },
@@ -97,6 +135,19 @@
         }
       ],
       "name": "createProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "downVote",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -163,6 +214,16 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "upVotes",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "downVotes",
+          "type": "uint256"
+        },
+        {
           "internalType": "bool",
           "name": "finalized",
           "type": "bool"
@@ -195,6 +256,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "upVote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {

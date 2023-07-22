@@ -11,20 +11,23 @@ contract DAO {
 	Token public token;
 	uint256 public quorum;
 
-
 	struct Proposal {
 		uint256 id;
 		string name;
 		uint256 amount;
 		address payable recipient;
 		uint256 votes;
+		uint256 upVotes;
+		uint256 downVotes;
 		bool finalized;
 	}
 
 	uint256 public proposalCount;
 	mapping(uint256 => Proposal) public proposals;
-	
+
 	mapping(address => mapping(uint256 => bool)) votes;
+	mapping(address => mapping(uint256 => bool)) upVotes;
+	mapping(address => mapping(uint256 => bool)) downVotes;
 
 	event Propose(
 		uint id,
@@ -34,6 +37,8 @@ contract DAO {
 	);
 
 	event Vote(uint256 id, address investor);
+	event UpVote(uint256 id, address investor);
+	event DownVote(uint256 id, address investor);
 	event Finalize(uint256 id);
 
 	constructor(Token _token, uint256 _quorum) {
@@ -54,23 +59,16 @@ contract DAO {
 	}
 
 
-
-	function createProposal(
-		string memory _name, 
-		uint256 _amount, 
-		address payable _recipient
+	function createProposal( string memory _name, uint256 _amount, address payable _recipient
 		) external onlyInvestor {
 
 		require(address(this).balance >= _amount);
-
-
 
 		// Adds a count every time the function is counted
 		proposalCount++;
 
 		// Create a proposal - we are going to MODEL the proposal itself
 		
-
 		// Populate the mapping
 		proposals[proposalCount] = Proposal(
 		proposalCount, 
@@ -78,6 +76,8 @@ contract DAO {
 		_amount, 
 		_recipient, 
 		0, 
+		0,
+		0,
 		false
 
 		);
@@ -88,7 +88,7 @@ contract DAO {
 
 
 
-	// Vote on proposal
+	// Vote on proposal - THIS WILL EVENTUALLY GO AWAY
 
 	function vote(uint256 _id) external onlyInvestor {
 		// Fetch proposal from mapping by id
@@ -96,7 +96,7 @@ contract DAO {
 		Proposal storage proposal = proposals[_id];
 
 		// Don't let investors vote twice
-		// Input will return TRUE, meaning they have voted, and FALSE if they have'nt, which is what we want
+		// Input will return TRUE, meaning they have voted, and FALSE if they haven't, which is what we want
 		
 		require(!votes[msg.sender][_id], "already voted");
 
@@ -109,6 +109,47 @@ contract DAO {
 
 		// Emit an event
 		emit Vote(_id, msg.sender);
+	}
+
+	// Vote on proposal - UP votes
+
+	function upVote(uint256 _id) external onlyInvestor {
+		// Fetch proposal from mapping by id
+
+		Proposal storage proposal = proposals[_id];
+
+		require(!votes[msg.sender][_id], "already voted");
+
+		// Update votes
+
+		proposal.upVotes += token.balanceOf(msg.sender);
+		proposal.votes += token.balanceOf(msg.sender);
+
+		// Track that user has voted
+		upVotes[msg.sender][_id] = true;
+
+		// Emit an event
+		emit UpVote(_id, msg.sender);
+	}
+
+	// Vote on proposal - DOWN votes
+
+	function downVote(uint256 _id) external onlyInvestor {
+		// Fetch proposal from mapping by id
+
+		Proposal storage proposal = proposals[_id];
+
+		require(!votes[msg.sender][_id], "already voted");
+
+		// Update votes
+		proposal.downVotes += token.balanceOf(msg.sender);
+		proposal.votes -= token.balanceOf(msg.sender);
+
+		// Track that user has voted
+		votes[msg.sender][_id] = true;
+
+		// Emit an event
+		emit DownVote(_id, msg.sender);
 	}
 
 	// Finalize proposal & transfer funds

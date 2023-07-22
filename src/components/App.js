@@ -24,6 +24,7 @@ function App() {
 
   const [proposals, setProposals] = useState(null)
   const [quorum, setQuorum] = useState(null)
+  const [quorumAmount, setQuorumAmount] = useState(0)
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -39,6 +40,10 @@ function App() {
     let treasuryBalance = await provider.getBalance(dao.address)
     treasuryBalance = ethers.utils.formatUnits(treasuryBalance, 18)
     setTreasuryBalance(treasuryBalance)
+
+    // Fetch price
+    const quorumAmount = ethers.utils.formatUnits(await dao.quorum(), 18)
+    setQuorumAmount(quorumAmount)
 
     // Fetch accounts
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
@@ -75,6 +80,7 @@ function App() {
 
       <h1 className='my-4 text-center'>Welcome to our DAO</h1>
 
+
       {isLoading ? (
         <Loading />
       ) : (
@@ -86,7 +92,9 @@ function App() {
           />
           <hr/>
 
-          <p className='text-center'><strong>GAY Treasury Balance:</strong> {treasuryBalance} ETH </p>
+          <p className='text-center' ><strong>GAY Treasury Balance:</strong> {treasuryBalance} ETH </p>
+          <p className='text-center' >{account}</p>
+          <p className='text-center'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
 
           <hr/>
 
@@ -105,3 +113,5 @@ function App() {
 }
 
 export default App;
+
+
