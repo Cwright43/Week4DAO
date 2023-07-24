@@ -57,19 +57,19 @@ async function main() {
 
   for (var i = 0; i < 3; i++) {
       // Create Proposal
-      transaction = await dao.connect(investor1).createProposal(`Proposal ${i + 1}`, ether(100), recipient.address)
+      transaction = await dao.connect(investor1).createProposal(`Proposal ${i + 1}`, `Testing New Proposals`, ether(100), recipient.address)
       await transaction.wait()
 
       // Vote 1
-      transaction = await dao.connect(investor1).vote(i + 1)
+      transaction = await dao.connect(investor1).upVote(i + 1)
       await transaction.wait()
 
       // Vote 2
-      transaction = await dao.connect(investor2).vote(i + 1)
+      transaction = await dao.connect(investor2).upVote(i + 1)
       await transaction.wait()
 
       // Vote 3
-      transaction = await dao.connect(investor3).vote(i + 1)
+      transaction = await dao.connect(investor3).upVote(i + 1)
       await transaction.wait()
 
       // Finalize
@@ -82,15 +82,15 @@ async function main() {
     console.log(`Creating one more proposal...\n`)
 
     // Create one more proposal
-    transaction = await dao.connect(investor1).createProposal(`Proposal 4`, ether(100), recipient.address)
+    transaction = await dao.connect(investor1).createProposal(`Proposal 4`, 'Fewer Initial Votes', ether(100), recipient.address)
     await transaction.wait()
 
     // Vote 1
-    transaction = await dao.connect(investor2).vote(4)
+    transaction = await dao.connect(investor2).upVote(4)
     await transaction.wait()
 
     // Vote 2
-    transaction = await dao.connect(investor3).vote(4)
+    transaction = await dao.connect(investor3).upVote(4)
     await transaction.wait()
 
     console.log(`Finished.\n`)

@@ -7,6 +7,7 @@ import Navigation from './Navigation';
 import Create from './Create';
 import Proposals from './Proposals';
 import Loading from './Loading';
+import Button from 'react-bootstrap/Button';
 
 // ABIs: Import your contract ABIs here
 import DAO_ABI from '../abis/DAO.json'
@@ -21,6 +22,8 @@ function App() {
   const [treasuryBalance, setTreasuryBalance] = useState(0)
 
   const [account, setAccount] = useState(null)
+  const [accountRecipient, setAccountRecipient] = useState(null)
+  const [accountBalance, setAccountBalance] = useState(0)
 
   const [proposals, setProposals] = useState(null)
   const [quorum, setQuorum] = useState(null)
@@ -49,6 +52,14 @@ function App() {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
+
+    // Fetch accounts
+    const accountRecipient = ethers.utils.getAddress(accounts[1])
+    setAccountRecipient(accountRecipient)
+
+    let accountBalance = await provider.getBalance(accountRecipient)
+    accountBalance = ethers.utils.formatUnits(accountBalance, 18)
+    setAccountBalance(accountBalance)
 
     // Fetch proposals count
     const count = await dao.proposalCount()
@@ -92,9 +103,21 @@ function App() {
           />
           <hr/>
 
-          <p className='text-center' ><strong>GAY Treasury Balance:</strong> {treasuryBalance} ETH </p>
-          <p className='text-center' >{account}</p>
-          <p className='text-center'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
+          <p className='text-left' ><strong>Active User Account: </strong>{account}</p>
+          <p className='text-left' ><strong>Treasury Balance:</strong> {treasuryBalance} ETH </p>
+          <p className='text-left' ><strong>Account Balance:</strong> {accountBalance}</p>
+          <p className='text-left'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
+          <p>
+              {( treasuryBalance >= 700 &&
+                <Button 
+                  variant="primary" 
+                  style={{ width: '100%' }}
+                  >
+                  Down Vote
+                </Button>
+                    )}
+
+          </p>
 
           <hr/>
 

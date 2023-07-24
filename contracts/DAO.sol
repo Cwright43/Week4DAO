@@ -15,7 +15,9 @@ contract DAO {
 		uint256 id;
 		string name;
 		uint256 amount;
+		string description;
 		address payable recipient;
+		uint256 recipientBalance;
 		uint256 votes;
 		uint256 upVotes;
 		uint256 downVotes;
@@ -23,11 +25,14 @@ contract DAO {
 	}
 
 	uint256 public proposalCount;
-	mapping(uint256 => Proposal) public proposals;
+	uint256 public recipientBalance;
+	string public description;
 
+	mapping(uint256 => Proposal) public proposals;
 	mapping(address => mapping(uint256 => bool)) votes;
 	mapping(address => mapping(uint256 => bool)) upVotes;
 	mapping(address => mapping(uint256 => bool)) downVotes;
+	
 
 	event Propose(
 		uint id,
@@ -59,7 +64,7 @@ contract DAO {
 	}
 
 
-	function createProposal( string memory _name, uint256 _amount, address payable _recipient
+	function createProposal(string memory _name, string memory _description, uint256 _amount, address payable _recipient
 		) external onlyInvestor {
 
 		require(address(this).balance >= _amount);
@@ -67,26 +72,31 @@ contract DAO {
 		// Adds a count every time the function is counted
 		proposalCount++;
 
+		description = _description;
+
+		recipientBalance = address(_recipient).balance;
+
+		console.log(recipientBalance);
+
 		// Create a proposal - we are going to MODEL the proposal itself
 		
 		// Populate the mapping
 		proposals[proposalCount] = Proposal(
 		proposalCount, 
 		_name, 
-		_amount, 
+		_amount,
+		description, 
 		_recipient, 
+		recipientBalance,
 		0, 
 		0,
 		0,
 		false
-
 		);
 
 		emit Propose(proposalCount, _amount, _recipient, msg.sender);
 		
 	}
-
-
 
 	// Vote on proposal - THIS WILL EVENTUALLY GO AWAY
 
@@ -123,10 +133,9 @@ contract DAO {
 		// Update votes
 
 		proposal.upVotes += token.balanceOf(msg.sender);
-		proposal.votes += token.balanceOf(msg.sender);
 
 		// Track that user has voted
-		upVotes[msg.sender][_id] = true;
+		votes[msg.sender][_id] = true;
 
 		// Emit an event
 		emit UpVote(_id, msg.sender);
@@ -143,7 +152,6 @@ contract DAO {
 
 		// Update votes
 		proposal.downVotes += token.balanceOf(msg.sender);
-		proposal.votes -= token.balanceOf(msg.sender);
 
 		// Track that user has voted
 		votes[msg.sender][_id] = true;
@@ -165,7 +173,7 @@ contract DAO {
 		proposal.finalized = true;
 
 		// Check that proposal has enough votes in order to pass - pretty simple
-		require(proposal.votes >= quorum, "must reach quorum to finalize proposal");
+		require((proposal.upVotes - proposal.downVotes) >= quorum, "must reach quorum to finalize proposal");
 
 		// Check that the contract has enough ether
 		require(address(this).balance >= proposal.amount);
@@ -174,6 +182,8 @@ contract DAO {
 
 		(bool sent, ) = proposal.recipient.call{value: proposal.amount}("");
 		require(sent);
+
+		proposal.recipientBalance = address(proposal.recipient).balance;
 
 		// Emit Event
 		emit Finalize(_id);
