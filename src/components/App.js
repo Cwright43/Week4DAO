@@ -108,12 +108,12 @@ function App() {
           <p className='text-left' ><strong>Account Balance:</strong> {accountBalance}</p>
           <p className='text-left'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
           <p>
-              {( treasuryBalance >= 700 &&
+              {( account == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 &&
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}
                   >
-                  Down Vote
+                  Test Button
                 </Button>
                     )}
 

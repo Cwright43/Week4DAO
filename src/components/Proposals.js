@@ -19,16 +19,18 @@ import config from '../config.json';
 const Proposals = ({ provider, dao, proposals, quorum, setIsLoading, votes }) => {
 
 const [account, setAccount] = useState(null)
+const [activeAccount, setActiveAccount] = useState(null)
 const [recipientBalance, setRecipientBalance] = useState(0)
 const [accountBalance, setAccountBalance] = useState(0)
 
-    const upVoteHandler = async (id) => {
+const upVoteHandler = async (id) => {
 
     // Fetch accounts
 
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
+    console.log(account)
 
     try {
 
@@ -44,13 +46,14 @@ const [accountBalance, setAccountBalance] = useState(0)
 
   }
 
-    const downVoteHandler = async (id) => {
+const downVoteHandler = async (id) => {
 
     // Fetch accounts
 
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
+    console.log(account)
 
     try {
 
@@ -115,7 +118,7 @@ const [accountBalance, setAccountBalance] = useState(0)
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td style={{color:'green'}}>{proposal.upVotes.toString() / 10e18}</td>
             <td>
-              {!proposal.finalized && !proposal.votes.account && (
+              {!proposal.finalized && !proposal.upVotes.account && (
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}
@@ -127,7 +130,7 @@ const [accountBalance, setAccountBalance] = useState(0)
             </td>
             <td style={{color:'red'}}>{proposal.downVotes.toString() / 10e18}</td>
             <td>
-              {!proposal.finalized && !proposal.votes.account && (
+              {!proposal.finalized &&  !proposal.downVotes.account && (
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}
@@ -149,9 +152,8 @@ const [accountBalance, setAccountBalance] = useState(0)
             		</Button>
             	  )}
             </td>
-            <td></td>
+            <td>{account}</td>
          </tr>
-
       		))}
       </tbody>
     </Table>

@@ -136,6 +136,7 @@ contract DAO {
 
 		// Track that user has voted
 		votes[msg.sender][_id] = true;
+		upVotes[msg.sender][_id] = true;
 
 		// Emit an event
 		emit UpVote(_id, msg.sender);
@@ -155,6 +156,7 @@ contract DAO {
 
 		// Track that user has voted
 		votes[msg.sender][_id] = true;
+		downVotes[msg.sender][_id] = true;
 
 		// Emit an event
 		emit DownVote(_id, msg.sender);

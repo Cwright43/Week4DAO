@@ -34,7 +34,7 @@ const Create = ({ provider, dao, setIsLoading }) => {
     	setAccountBalance(accountBalance)
 
 		} catch {
-			window.alert('User rejected or transaction reverted U GAY!')
+			window.alert('User rejected or transaction reverted - Create')
 		}
 
 		setIsLoading(true)
