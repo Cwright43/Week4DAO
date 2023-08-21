@@ -29,9 +29,9 @@ contract DAO {
 	string public description;
 
 	mapping(uint256 => Proposal) public proposals;
-	mapping(address => mapping(uint256 => bool)) votes;
-	mapping(address => mapping(uint256 => bool)) upVotes;
-	mapping(address => mapping(uint256 => bool)) downVotes;
+	mapping(address => mapping(uint256 => bool)) public votes;
+	mapping(address => mapping(uint256 => bool)) public upVotes;
+	mapping(address => mapping(uint256 => bool)) public downVotes;
 	
 
 	event Propose(
@@ -88,7 +88,7 @@ contract DAO {
 		description, 
 		_recipient, 
 		recipientBalance,
-		0, 
+		0,
 		0,
 		0,
 		false
@@ -98,40 +98,15 @@ contract DAO {
 		
 	}
 
-	// Vote on proposal - THIS WILL EVENTUALLY GO AWAY
-
-	function vote(uint256 _id) external onlyInvestor {
-		// Fetch proposal from mapping by id
-
-		Proposal storage proposal = proposals[_id];
-
-		// Don't let investors vote twice
-		// Input will return TRUE, meaning they have voted, and FALSE if they haven't, which is what we want
-		
-		require(!votes[msg.sender][_id], "already voted");
-
-		// Update votes
-
-		proposal.votes += token.balanceOf(msg.sender);
-
-		// Track that user has voted
-		votes[msg.sender][_id] = true;
-
-		// Emit an event
-		emit Vote(_id, msg.sender);
-	}
-
 	// Vote on proposal - UP votes
-
 	function upVote(uint256 _id) external onlyInvestor {
-		// Fetch proposal from mapping by id
 
+		// Fetch proposal from mapping by id
 		Proposal storage proposal = proposals[_id];
 
 		require(!votes[msg.sender][_id], "already voted");
 
 		// Update votes
-
 		proposal.upVotes += token.balanceOf(msg.sender);
 
 		// Track that user has voted
@@ -145,8 +120,8 @@ contract DAO {
 	// Vote on proposal - DOWN votes
 
 	function downVote(uint256 _id) external onlyInvestor {
-		// Fetch proposal from mapping by id
 
+		// Fetch proposal from mapping by id
 		Proposal storage proposal = proposals[_id];
 
 		require(!votes[msg.sender][_id], "already voted");
@@ -161,6 +136,13 @@ contract DAO {
 		// Emit an event
 		emit DownVote(_id, msg.sender);
 	}
+
+	/*
+	function disburseERC20(IERC20 token, address sender, address recipient, uint256 amount) private {
+		bool sent = token.transferFrom(sender, recipient, amount);
+		require (sent, "Token transfer failed");
+	}
+	*/
 
 	// Finalize proposal & transfer funds
 	function finalizeProposal(uint256 _id) external onlyInvestor {
@@ -181,6 +163,9 @@ contract DAO {
 		require(address(this).balance >= proposal.amount);
 
 		// Transfer the funds
+
+		// Change this function for ERC-20 custody switch
+		// disburseERC20(USDCtoken, address(this), proposal.recipient, proposal.amount)
 
 		(bool sent, ) = proposal.recipient.call{value: proposal.amount}("");
 		require(sent);

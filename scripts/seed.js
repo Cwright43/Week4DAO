@@ -51,13 +51,15 @@ async function main() {
   console.log(`DAO fetched: ${dao.address}\n`)
 
   // Funder sends Ether to DAO treasury
+
+  // Change this command for ERC-20 Custody token
   transaction = await funder.sendTransaction({ to: dao.address, value: ether(1000) }) // 1,000 Ether
   await transaction.wait()
   console.log(`Sent funds to dao treasury...\n`)
 
   for (var i = 0; i < 3; i++) {
       // Create Proposal
-      transaction = await dao.connect(investor1).createProposal(`Proposal ${i + 1}`, `Testing New Proposals`, ether(100), recipient.address)
+      transaction = await dao.connect(investor1).createProposal(`Proposal ${i + 1}`, `Testing New Proposals`, ether(5), recipient.address)
       await transaction.wait()
 
       // Vote 1
@@ -82,7 +84,7 @@ async function main() {
     console.log(`Creating one more proposal...\n`)
 
     // Create one more proposal
-    transaction = await dao.connect(investor1).createProposal(`Proposal 4`, 'Fewer Initial Votes', ether(100), recipient.address)
+    transaction = await dao.connect(investor1).createProposal(`Proposal 4`, 'Fewer Initial Votes', ether(5), recipient.address)
     await transaction.wait()
 
     // Vote 1

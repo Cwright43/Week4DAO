@@ -4,40 +4,35 @@ import { ethers } from 'ethers'
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import Navbar from 'react-bootstrap/Navbar';
 
-import Create from './Create';
-import App from './App';
-import Navigation from './Navigation';
+const Proposals = ({ provider, dao, account, proposals, quorum, setIsLoading }) => {
 
-// ABIs: Import your contract ABIs here
-import DAO_ABI from '../abis/DAO.json'
-
-// Config: Import your network config here
-import config from '../config.json';
-
-const Proposals = ({ provider, dao, proposals, quorum, setIsLoading, votes }) => {
-
-const [account, setAccount] = useState(null)
 const [activeAccount, setActiveAccount] = useState(null)
 const [recipientBalance, setRecipientBalance] = useState(0)
 const [accountBalance, setAccountBalance] = useState(0)
+const [hasVoted, setHasVoted] = useState(false)
+
+// Talk to smart contract and call upvotes function
+// Pass in address and pass in proposal ID
+// Returns T/F from smart contract
+
+const hasUpVoted = async (account, id) => {
+    
+   const transaction = await dao.votes(account, id)
+   console.log(transaction)
+
+   setIsLoading(false)
+
+  }
 
 const upVoteHandler = async (id) => {
-
-    // Fetch accounts
-
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    const account = ethers.utils.getAddress(accounts[0])
-    setAccount(account)
-    console.log(account)
 
     try {
 
     const signer = await provider.getSigner()
     const transaction = await dao.connect(signer).upVote(id)
     await transaction.wait()
-
+    
     } catch {
       window.alert('User rejected or transaction reverted - Upvote Handler')
     }
@@ -47,20 +42,13 @@ const upVoteHandler = async (id) => {
   }
 
 const downVoteHandler = async (id) => {
-
-    // Fetch accounts
-
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    const account = ethers.utils.getAddress(accounts[0])
-    setAccount(account)
-    console.log(account)
-
+    
     try {
 
     const signer = await provider.getSigner()
     const transaction = await dao.connect(signer).downVote(id)
     await transaction.wait()
-
+    
     } catch {
       window.alert('User rejected or transaction reverted - Downvote Handler')
     }
@@ -76,11 +64,28 @@ const downVoteHandler = async (id) => {
   	const signer = await provider.getSigner()
   	const transaction = await dao.connect(signer).finalizeProposal(id)
   	await transaction.wait()
+
   	} catch {
   		window.alert('User rejected or transaction reverted - Finalize Handler')
   	}
 
   	setIsLoading(true)
+
+  }
+
+  const showBooleanHandler = async (id) => {
+
+    try {
+
+      const transaction = hasUpVoted(account, id)
+
+      console.log(`${transaction}`)
+
+    } catch {
+      window.alert('User rejected or transaction reverted - Boolean Handler')
+    }
+
+   //  setIsLoading(true)
 
   }
 
@@ -102,7 +107,7 @@ const downVoteHandler = async (id) => {
           <th>Cast Down-Vote</th>
           <th>Total Votes</th>
           <th>Finalize</th>
-          <th>Current User</th>
+          <th>Boolean Button</th>
         </tr>
       </thead>
       <tbody>
@@ -113,12 +118,12 @@ const downVoteHandler = async (id) => {
             <td>{proposal.name}</td>
             <td>{proposal.description}</td>
             <td>{ethers.utils.formatUnits(proposal.recipientBalance, "ether")}</td>
-            <td>{proposal.recipient}</td>
+            <td>{proposal.recipient.slice(0, 5) + ' ... ' + proposal.recipient.slice(39, 42) }</td>
             <td>{ethers.utils.formatUnits(proposal.amount, "ether")} ETH</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td style={{color:'green'}}>{proposal.upVotes.toString() / 10e18}</td>
             <td>
-              {!proposal.finalized && !proposal.upVotes.account && (
+              {!proposal.finalized && hasUpVoted(account, proposal.id) && ( 
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}
@@ -130,7 +135,7 @@ const downVoteHandler = async (id) => {
             </td>
             <td style={{color:'red'}}>{proposal.downVotes.toString() / 10e18}</td>
             <td>
-              {!proposal.finalized &&  !proposal.downVotes.account && (
+              {!proposal.finalized && !hasUpVoted(account, proposal.id) &&  (
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}
@@ -152,7 +157,15 @@ const downVoteHandler = async (id) => {
             		</Button>
             	  )}
             </td>
-            <td>{account}</td>
+            <td>
+                <Button 
+                  variant="primary" 
+                  style={{ width: '100%' }}
+                  onClick={() => showBooleanHandler(proposal.id)}
+                  >
+                  Show Boolean
+                </Button>
+            </td>
          </tr>
       		))}
       </tbody>

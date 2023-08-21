@@ -72,9 +72,10 @@ function App() {
 
     setProposals(items)
 
-
     // Fetching the quorum
     setQuorum(await dao.quorum())
+
+    console.log()
 
     setIsLoading(false)
   }
@@ -124,9 +125,11 @@ function App() {
           <Proposals 
             provider={provider} 
             dao={dao}
+            account={account}
             proposals={proposals}
             quorum={quorum}
             setIsLoading={setIsLoading}
+            
 
             />
         </>
