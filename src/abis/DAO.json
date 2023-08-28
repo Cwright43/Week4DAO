@@ -10,6 +10,11 @@
           "internalType": "uint256",
           "name": "_quorum",
           "type": "uint256"
+        },
+        {
+          "internalType": "contract Token",
+          "name": "_usdc",
+          "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
@@ -115,6 +120,19 @@
       ],
       "name": "Vote",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_token1Amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "addLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -311,19 +329,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_id",
-          "type": "uint256"
-        }
-      ],
-      "name": "showVoteStatus",
-      "outputs": [],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "token",
       "outputs": [
@@ -368,6 +373,19 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "usdc",
+      "outputs": [
+        {
+          "internalType": "contract Token",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",

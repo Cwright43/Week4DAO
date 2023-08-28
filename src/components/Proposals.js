@@ -19,7 +19,9 @@ const [hasVoted, setHasVoted] = useState(false)
 const hasUpVoted = async (account, id) => {
     
    const transaction = await dao.votes(account, id)
+   Array.isArray(transaction)
    console.log(transaction)
+   
 
    setIsLoading(false)
 

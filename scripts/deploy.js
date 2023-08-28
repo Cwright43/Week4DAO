@@ -11,6 +11,10 @@ async function main() {
   const SYMBOL = 'DAPP'
   const MAX_SUPPLY = '1000000'
 
+  const NAME1 = 'USDC Token'
+  const SYMBOL1 = 'USDC'
+  const MAX_SUPPLY1 = '1000000'
+
   // Deploy Token
   const Token = await hre.ethers.getContractFactory('Token')
   let token = await Token.deploy(NAME, SYMBOL, MAX_SUPPLY)
@@ -18,9 +22,16 @@ async function main() {
 
   console.log(`Token deployed to: ${token.address}\n`)
 
+  // Deploy USDC
+  const USDC = await hre.ethers.getContractFactory('Token')
+  let usdc = await USDC.deploy(NAME1, SYMBOL1, MAX_SUPPLY1)
+  await usdc.deployed()
+
+  console.log(`USDC Token deployed to: ${usdc.address}\n`)
+
   // Deploy DAO
   const DAO = await hre.ethers.getContractFactory('DAO')
-  const dao = await DAO.deploy(token.address, '500000000000000000000001')
+  const dao = await DAO.deploy(token.address, '500000000000000000000001', usdc.address)
   await dao.deployed()
 
   console.log(`DAO deployed to: ${dao.address}\n`)

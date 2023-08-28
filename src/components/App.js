@@ -11,6 +11,7 @@ import Button from 'react-bootstrap/Button';
 
 // ABIs: Import your contract ABIs here
 import DAO_ABI from '../abis/DAO.json'
+import TOKEN_ABI from '../abis/Token.json'
 
 // Config: Import your network config here
 import config from '../config.json';
@@ -19,7 +20,9 @@ function App() {
   
   const [provider, setProvder] = useState(null)
   const [dao, setDao] = useState(null)
+  const [usdc, setUSDC] = useState(null)
   const [treasuryBalance, setTreasuryBalance] = useState(0)
+  const [usdcBalance, setUSDCBalance] = useState(0)
 
   const [account, setAccount] = useState(null)
   const [accountRecipient, setAccountRecipient] = useState(null)
@@ -40,9 +43,19 @@ function App() {
     const dao = new ethers.Contract(config[31337].dao.address, DAO_ABI, provider)
     setDao(dao)
 
+    // Initiate contracts
+    let usdc = new ethers.Contract(config[31337].usdc.address, TOKEN_ABI, provider)
+    setUSDC(usdc)
+
+    console.log(usdc)
+
     let treasuryBalance = await provider.getBalance(dao.address)
     treasuryBalance = ethers.utils.formatUnits(treasuryBalance, 18)
     setTreasuryBalance(treasuryBalance)
+
+    let usdcBalance = await usdc.balanceOf(dao.address)
+    usdcBalance = ethers.utils.formatUnits(usdcBalance, 18)
+    setUSDCBalance(usdcBalance)
 
     // Fetch price
     const quorumAmount = ethers.utils.formatUnits(await dao.quorum(), 18)
@@ -106,6 +119,7 @@ function App() {
 
           <p className='text-left' ><strong>Active User Account: </strong>{account}</p>
           <p className='text-left' ><strong>Treasury Balance:</strong> {treasuryBalance} ETH </p>
+          <p className='text-left' ><strong>USDC Treasury Balance:</strong> {usdcBalance} ETH </p>
           <p className='text-left' ><strong>Account Balance:</strong> {accountBalance}</p>
           <p className='text-left'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
           <p>

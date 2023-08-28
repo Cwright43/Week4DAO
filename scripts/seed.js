@@ -44,17 +44,45 @@ async function main() {
   transaction = await token.transfer(investor3.address, tokens(200000))
   await transaction.wait()
 
+  console.log(`Fetching USDC token and transferring to accounts...\n`)
+
+  // Fetch deployed token
+  const usdc = await ethers.getContractAt('Token', config[chainId].usdc.address)
+  console.log(`USDC fetched: ${usdc.address}\n`)
+
+  transaction = await usdc.transfer(investor1.address, tokens(100000))
+  await transaction.wait()
+
+  transaction = await usdc.transfer(investor2.address, tokens(100000))
+  await transaction.wait()
+
+  transaction = await usdc.transfer(investor3.address, tokens(100000))
+  await transaction.wait()
+
   console.log(`Fetching dao...\n`)
 
   // Fetch deployed dao
   const dao = await ethers.getContractAt('DAO', config[chainId].dao.address)
   console.log(`DAO fetched: ${dao.address}\n`)
 
-  // Funder sends Ether to DAO treasury
+  // Approving  USDC
+
+  transaction = await usdc.connect(funder).approve(dao.address, tokens(5000))
+  await transaction.wait()
+
+  // Sending USDC to the DAO contract
+  // transaction = await dao.connect(funder).addLiquidity(tokens(5000))
+  // await transaction.wait()
+
+  transaction = await usdc.transfer(dao.address, tokens(5555))
+  await transaction.wait()
+
+  console.log(`Sent USDC to dao treasury...\n`)
 
   // Change this command for ERC-20 Custody token
   transaction = await funder.sendTransaction({ to: dao.address, value: ether(1000) }) // 1,000 Ether
   await transaction.wait()
+
   console.log(`Sent funds to dao treasury...\n`)
 
   for (var i = 0; i < 3; i++) {

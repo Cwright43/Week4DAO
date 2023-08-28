@@ -9,6 +9,8 @@ contract DAO {
    // The person that creates the DAO
 	address owner;
 	Token public token;
+	Token public usdc;
+
 	uint256 public quorum;
 
 	struct Proposal {
@@ -46,10 +48,11 @@ contract DAO {
 	event DownVote(uint256 id, address investor);
 	event Finalize(uint256 id);
 
-	constructor(Token _token, uint256 _quorum) {
+	constructor(Token _token,  uint256 _quorum, Token _usdc) {
 		owner = msg.sender;
 		token = _token;
 		quorum = _quorum;
+		usdc = _usdc;
 	}
 
 	// Allow contract to receive ether
@@ -137,12 +140,12 @@ contract DAO {
 		emit DownVote(_id, msg.sender);
 	}
 
-	/*
-	function disburseERC20(IERC20 token, address sender, address recipient, uint256 amount) private {
-		bool sent = token.transferFrom(sender, recipient, amount);
-		require (sent, "Token transfer failed");
-	}
-	*/
+    function addLiquidity(uint256 _token1Amount) external {
+        
+        // Deposit USDC tokens to the DAO contract
+            usdc.transferFrom(msg.sender, address(this), _token1Amount);
+     }
+
 
 	// Finalize proposal & transfer funds
 	function finalizeProposal(uint256 _id) external onlyInvestor {
@@ -164,11 +167,10 @@ contract DAO {
 
 		// Transfer the funds
 
-		// Change this function for ERC-20 custody switch
-		// disburseERC20(USDCtoken, address(this), proposal.recipient, proposal.amount)
-
 		(bool sent, ) = proposal.recipient.call{value: proposal.amount}("");
 		require(sent);
+
+		// usdc.transferFrom(address(this), proposal.recipient, proposal.amount);
 
 		proposal.recipientBalance = address(proposal.recipient).balance;
 
