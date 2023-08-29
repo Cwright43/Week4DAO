@@ -77,7 +77,9 @@ contract DAO {
 
 		description = _description;
 
-		recipientBalance = address(_recipient).balance;
+		// recipientBalance = address(_recipient).balance;
+
+		recipientBalance = usdc.balanceOf(_recipient);
 
 		console.log(recipientBalance);
 
@@ -167,12 +169,12 @@ contract DAO {
 
 		// Transfer the funds
 
-		(bool sent, ) = proposal.recipient.call{value: proposal.amount}("");
-		require(sent);
+		// (bool sent, ) = proposal.recipient.call{value: proposal.amount}("");
+		// require(sent);
 
-		// usdc.transferFrom(address(this), proposal.recipient, proposal.amount);
+		usdc.transfer(proposal.recipient, proposal.amount);
 
-		proposal.recipientBalance = address(proposal.recipient).balance;
+		proposal.recipientBalance = usdc.balanceOf(proposal.recipient);
 
 		// Emit Event
 		emit Finalize(_id);

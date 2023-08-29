@@ -99,9 +99,9 @@ const downVoteHandler = async (id) => {
           <th>#</th>
           <th>Proposal Name</th>
           <th>Proposal Description</th>
-          <th>Recipient Balance</th>
+          <th>Recipient Balance (USDC)</th>
           <th>Recipient Account</th>
-          <th>Amount</th>
+          <th>Amount (USDC)</th>
           <th>Status</th>
           <th>Up Votes</th>
           <th>Cast Up-Vote</th>
@@ -121,7 +121,7 @@ const downVoteHandler = async (id) => {
             <td>{proposal.description}</td>
             <td>{ethers.utils.formatUnits(proposal.recipientBalance, "ether")}</td>
             <td>{proposal.recipient.slice(0, 5) + ' ... ' + proposal.recipient.slice(39, 42) }</td>
-            <td>{ethers.utils.formatUnits(proposal.amount, "ether")} ETH</td>
+            <td>{ethers.utils.formatUnits(proposal.amount, "ether")}</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td style={{color:'green'}}>{proposal.upVotes.toString() / 10e18}</td>
             <td>
@@ -137,7 +137,7 @@ const downVoteHandler = async (id) => {
             </td>
             <td style={{color:'red'}}>{proposal.downVotes.toString() / 10e18}</td>
             <td>
-              {!proposal.finalized && !hasUpVoted(account, proposal.id) &&  (
+              {!proposal.finalized && hasUpVoted(account, proposal.id) &&  (
                 <Button 
                   variant="primary" 
                   style={{ width: '100%' }}

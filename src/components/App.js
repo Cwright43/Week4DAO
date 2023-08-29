@@ -70,7 +70,7 @@ function App() {
     const accountRecipient = ethers.utils.getAddress(accounts[1])
     setAccountRecipient(accountRecipient)
 
-    let accountBalance = await provider.getBalance(accountRecipient)
+    let accountBalance = await usdc.balanceOf(accounts[0])
     accountBalance = ethers.utils.formatUnits(accountBalance, 18)
     setAccountBalance(accountBalance)
 
@@ -119,9 +119,9 @@ function App() {
 
           <p className='text-left' ><strong>Active User Account: </strong>{account}</p>
           <p className='text-left' ><strong>Treasury Balance:</strong> {treasuryBalance} ETH </p>
-          <p className='text-left' ><strong>USDC Treasury Balance:</strong> {usdcBalance} ETH </p>
-          <p className='text-left' ><strong>Account Balance:</strong> {accountBalance}</p>
-          <p className='text-left'><strong>Quorum Requirement:</strong> {quorumAmount} ETH </p>
+          <p className='text-left' ><strong>Treasury Balance:</strong> {usdcBalance} USDC </p>
+          <p className='text-left' ><strong>User Balance:</strong> {accountBalance} USDC</p>
+          <p className='text-left'><strong>Quorum Threshold:</strong> {quorumAmount.slice(0, 6)} Tokens </p>
           <p>
               {( account == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 &&
                 <Button 
